@@ -3,70 +3,87 @@ import pandas as pd
 import io
 import requests
 
-st.set_page_config(layout="centered")
+st.set_page_config(
+    layout="centered",
+    page_title="Resultados",
+    page_icon="📊"
+)
 
-# Ocultar completamente o menu lateral original
+# CSS aprimorado
 st.markdown("""
-    <style>
-    section[data-testid="stSidebar"] ul {
-        display: none !important;
-    }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    /* Centraliza conteúdo principal */
+<style>
+
+/* Remove elementos padrão */
+section[data-testid="stSidebar"] {display: none;}
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Centralização real */
+.block-container {
+    max-width: 520px;
+    margin: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Card visual */
+.metric-card {
+    background-color: #111827;
+    padding: 2rem 1rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
     .block-container {
-        max-width: 600px;
-        margin: auto;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        max-width: 95%;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
-    </style>
+}
+
+</style>
 """, unsafe_allow_html=True)
 
 url = st.secrets["url"]
 
-# Download the file using requests with SSL verification
-response = requests.get(url, verify=False)
-receita = pd.read_excel(io.BytesIO(response.content), sheet_name='Resultado mensal')
+@st.cache_data(ttl=3600)
+def carregar_dados(url):
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    return pd.read_excel(io.BytesIO(response.content), sheet_name="Resultado mensal")
 
-# Exibir as métricas dos 2 últimos meses
-st.title("📊 Resultados")
+receita = carregar_dados(url)
 
-st.subheader("Resultado dos últimos 2 meses")
+st.markdown("<h1 style='text-align:center;'>📊 Resultados</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:gray;'>Últimos 2 meses</p>", unsafe_allow_html=True)
 
-# Pegar as 2 últimas linhas
-ultimos_dois = receita.tail(2)
+ultimos_dois = receita.tail(2).reset_index(drop=True)
 
-# Exibir em colunas
-col1, col2 = st.columns(2)
+for i in range(2):
+    mes = ultimos_dois.iloc[i]
+    valor = mes['% sobre média']
+    data_formatada = pd.to_datetime(mes['Mês']).strftime('%m/%Y')
 
-with col1:
-    mes1 = ultimos_dois.iloc[0]
-    valor_mes1 = mes1['% sobre média']
-    data_formatada1 = pd.to_datetime(mes1['Mês']).strftime('%m/%Y')
-    cor1 = "green" if valor_mes1 >= 1.0 else "red"
-    icone1 = "✓" if valor_mes1 >= 1.0 else "✗"
-    st.markdown(f"<h3 style='color: {cor1};text-align:center;'>{data_formatada1}</h3>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='color: {cor1};text-align:center;'>{icone1} {valor_mes1:.2%}</h2>", unsafe_allow_html=True)
+    valor_exibido = min(valor, 1.0)
+    cor = "#22c55e" if valor >= 1.0 else "#ef4444"
+    icone = "✓" if valor >= 1.0 else "✗"
 
-with col2:
-    mes2 = ultimos_dois.iloc[1]
-    valor_mes2 = mes2['% sobre média']
-    data_formatada2 = pd.to_datetime(mes2['Mês']).strftime('%m/%Y')
-    # Limitar a 100% se for maior
-    valor_exibido = min(valor_mes2, 1.0)  # 1.0 = 100%
-    cor2 = "green" if valor_exibido >= 1.0 else "red"
-    icone2 = "✓" if valor_mes2 >= 1.0 else "✗"
-    st.markdown(f"<h3 style='color: {cor2};text-align:center;'>{data_formatada2}</h3>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='color: {cor2};text-align:center;'>{icone2} {valor_exibido:.2%}</h2>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="metric-card">
+            <h3 style="margin:0;color:#9ca3af;">{data_formatada}</h3>
+            <h1 style="margin-top:10px;color:{cor};">
+                {icone} {valor_exibido:.2%}
+            </h1>
+        </div>
+    """, unsafe_allow_html=True)
 
-st.divider()
-
-# Footer
 st.markdown("""
-    <hr style='border:1px solid #e3e3e3;margin-top:40px'>
-    <div style='text-align: center;'>
+    <div style='text-align:center;margin-top:40px;font-size:14px;color:gray;'>
         Desenvolvido por 
         <a href='https://www.linkedin.com/in/tairone-amaral/' target='_blank'>
             Tairone Amaral
