@@ -14,6 +14,13 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    /* Centraliza conteúdo principal */
+    .block-container {
+        max-width: 600px;
+        margin: auto;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
