@@ -76,6 +76,9 @@ for i in range(2):
     valor_exibido = min(valor, 1.0)
     cor = "#22c55e" if valor >= 1.0 else "#ef4444"
     icone = "✓" if valor >= 1.0 else "✗"
+    if i == 1 and valor < 1.0:
+        st.balloons()
+    
 
     st.markdown(f"""
         <div class="metric-card">
