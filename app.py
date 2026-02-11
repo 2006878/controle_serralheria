@@ -3,6 +3,18 @@ import pandas as pd
 import io
 import requests
 
+# Ocultar completamente o menu lateral original
+st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] ul {
+        display: none !important;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
 url = st.secrets("url")
 
 # Download the file using requests with SSL verification
@@ -10,9 +22,9 @@ response = requests.get(url, verify=False)
 receita = pd.read_excel(io.BytesIO(response.content), sheet_name='Resultado mensal')
 
 # Exibir as métricas dos 2 últimos meses
-st.title("📊 Serralheria - Métricas de Desempenho")
+st.title("📊 Serralheria - Resultados")
 
-st.subheader("Resultado financeiro dos últimos 2 meses")
+st.subheader("Resultado dos últimos 2 meses")
 
 # Pegar as 2 últimas linhas
 ultimos_dois = receita.tail(2)
@@ -41,3 +53,14 @@ with col2:
     st.markdown(f"<h2 style='color: {cor2};'>{icone2} {valor_exibido:.2%}</h2>", unsafe_allow_html=True)
 
 st.divider()
+
+# Footer
+st.markdown("""
+    <hr style='border:1px solid #e3e3e3;margin-top:40px'>
+    <div style='text-align: center;'>
+        Desenvolvido por 
+        <a href='https://www.linkedin.com/in/tairone-amaral/' target='_blank'>
+            Tairone Amaral
+        </a>
+    </div>
+""", unsafe_allow_html=True)
