@@ -24,7 +24,7 @@ response = requests.get(url, verify=False)
 receita = pd.read_excel(io.BytesIO(response.content), sheet_name='Resultado mensal')
 
 # Exibir as métricas dos 2 últimos meses
-st.title("📊 Serralheria - Resultados")
+st.title("📊 Resultados")
 
 st.subheader("Resultado dos últimos 2 meses")
 
