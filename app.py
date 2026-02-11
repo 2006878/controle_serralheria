@@ -55,7 +55,10 @@ url = st.secrets["url"]
 def carregar_dados(url):
     response = requests.get(url, timeout=30)
     response.raise_for_status()
-    return pd.read_excel(io.BytesIO(response.content), sheet_name="Resultado mensal")
+    df = pd.read_excel(io.BytesIO(response.content), sheet_name="Resultado mensal")
+    # Limpa espaços extras dos nomes das colunas
+    df.columns = df.columns.str.strip()
+    return df
 
 receita = carregar_dados(url)
 
@@ -66,7 +69,8 @@ ultimos_dois = receita.tail(2).reset_index(drop=True)
 
 for i in range(2):
     mes = ultimos_dois.iloc[i]
-    valor = mes['Percentual Produtividade']
+    # Garante que não dará KeyError
+    valor = mes.get('Percentual Produtividade', 0)
     data_formatada = pd.to_datetime(mes['Mês']).strftime('%m/%Y')
 
     valor_exibido = min(valor, 1.0)
