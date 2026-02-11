@@ -15,7 +15,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-url = st.secrets("url")
+url = st.secrets["url"]
 
 # Download the file using requests with SSL verification
 response = requests.get(url, verify=False)
