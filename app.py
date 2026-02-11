@@ -3,6 +3,8 @@ import pandas as pd
 import io
 import requests
 
+st.set_page_config(layout="centered")
+
 # Ocultar completamente o menu lateral original
 st.markdown("""
     <style>
