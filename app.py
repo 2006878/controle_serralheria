@@ -51,7 +51,7 @@ header {visibility: hidden;}
 
 url = st.secrets["url"]
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=60)
 def carregar_dados(url):
     response = requests.get(url, timeout=30)
     response.raise_for_status()
