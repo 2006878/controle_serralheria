@@ -3,7 +3,7 @@ import pandas as pd
 import io
 import requests
 
-url = 'https://docs.google.com/spreadsheets/d/1oRNTepy5zMmJz4RVoplp3xTLchumF81STWJi1bzra74/export?format=xlsx'
+url = st.secrets("url")
 
 # Download the file using requests with SSL verification
 response = requests.get(url, verify=False)
