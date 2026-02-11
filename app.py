@@ -66,7 +66,7 @@ ultimos_dois = receita.tail(2).reset_index(drop=True)
 
 for i in range(2):
     mes = ultimos_dois.iloc[i]
-    valor = mes['% sobre média']
+    valor = mes['Percentual Produtividade']
     data_formatada = pd.to_datetime(mes['Mês']).strftime('%m/%Y')
 
     valor_exibido = min(valor, 1.0)
